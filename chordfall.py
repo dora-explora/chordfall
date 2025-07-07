@@ -24,13 +24,13 @@ class Note(pygame.sprite.Sprite):
     def __init__(self, white_note: bool, height: int, x: float, y: float):
         super().__init__()
         if white_note:
-            self.image = pygame.Surface([45, height])
+            self.image = pygame.Surface([35, height])
             self.image.fill("white")
         else:
-            self.image = pygame.Surface([30, height])
+            self.image = pygame.Surface([20, height])
             self.image.fill("black")
         self.rect = self.image.get_rect()
-        self.rect = self.rect.move(x, y)
+        self.rect = self.rect.move(x + 5, y - height)
 
 pygame.init()
 screen = pygame.display.set_mode((720, 900))
@@ -45,19 +45,52 @@ move_speed = 4
 note_speed = 10
 
 # note -> x position key:
-# C4: 8
-# D4: 68
-# E4: 128
-# F4: 188
-# G4: 268
-# A4: 348
-# B4: 428
-# C5: 508
-# D5: 588
-# E5: 668
-# F5: 748
-# G5: 828
-level_0_notes = [Note(True, 128, 8, -1200)]
+C4 = 8
+D4 = 68
+E4 = 128
+F4 = 188
+G4 = 248
+A4 = 308
+B4 = 368
+C5 = 428
+D5 = 488
+E5 = 548
+F5 = 608
+G5 = 668
+
+level_0_bar_length = 375  # in pixels
+level_0_offset = -650
+level_0_notes = [
+                # Fmaj7
+                Note(True, level_0_bar_length, F4, level_0_offset), 
+                Note(True, level_0_bar_length, A4, level_0_offset), 
+                Note(True, level_0_bar_length, C5, level_0_offset), 
+                Note(True, level_0_bar_length, E5, level_0_offset),
+                # Em7
+                Note(True, level_0_bar_length, E4, -level_0_bar_length * (3 + 2/3) + level_0_offset), 
+                Note(True, level_0_bar_length, G4, -level_0_bar_length * (3 + 2/3) + level_0_offset),
+                Note(True, level_0_bar_length, B4, -level_0_bar_length * (3 + 2/3) + level_0_offset),
+                Note(True, level_0_bar_length, D5, -level_0_bar_length * (3 + 2/3) + level_0_offset),
+                Note(True, level_0_bar_length, E5, -level_0_bar_length * (3 + 2/3) + level_0_offset),
+                # Dm9
+                Note(True, level_0_bar_length, D4, -level_0_bar_length * (8) + level_0_offset),
+                Note(True, level_0_bar_length, F4, -level_0_bar_length * (8) + level_0_offset),
+                Note(True, level_0_bar_length, A4, -level_0_bar_length * (8) + level_0_offset),
+                Note(True, level_0_bar_length, C5, -level_0_bar_length * (8) + level_0_offset),
+                Note(True, level_0_bar_length, E5, -level_0_bar_length * (8) + level_0_offset),
+                # G7/D
+                Note(True, level_0_bar_length, D4, -level_0_bar_length * (9 + 2/3) + level_0_offset),
+                Note(True, level_0_bar_length, F4, -level_0_bar_length * (9 + 2/3) + level_0_offset),
+                Note(True, level_0_bar_length, G4, -level_0_bar_length * (9 + 2/3) + level_0_offset),
+                Note(True, level_0_bar_length, B4, -level_0_bar_length * (9 + 2/3) + level_0_offset),
+                Note(True, level_0_bar_length, D5, -level_0_bar_length * (9 + 2/3) + level_0_offset),
+                # Cmaj7
+                Note(True, level_0_bar_length, C4, -level_0_bar_length * (11 + 2/3) + level_0_offset),
+                Note(True, level_0_bar_length, E4, -level_0_bar_length * (11 + 2/3) + level_0_offset),
+                Note(True, level_0_bar_length, G4, -level_0_bar_length * (11 + 2/3) + level_0_offset),
+                Note(True, level_0_bar_length, B4, -level_0_bar_length * (11 + 2/3) + level_0_offset),
+                Note(True, level_0_bar_length, E5, -level_0_bar_length * (11 + 2/3) + level_0_offset)
+                ]
 pygame.mixer.music.load("Level 0.mp3")
 pygame.mixer.music.play()
 
