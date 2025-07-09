@@ -1,5 +1,6 @@
 import pygame
 import pygame_menu
+import notes # type: ignore
 
 import pygame_menu.themes
 
@@ -46,54 +47,6 @@ note_speed = 10
 player_frame = 0
 player_bounce_countdown = 40
 
-# note -> x position key:
-C4 = 8
-D4 = 68
-E4 = 128
-F4 = 188
-G4 = 248
-A4 = 308
-B4 = 368
-C5 = 428
-D5 = 488
-E5 = 548
-F5 = 608
-G5 = 668 
-
-level_1_bar_length = 375  # in pixels
-level_1_offset = -650
-level_1_notelist = [
-                # Fmaj7
-                [True, level_1_bar_length, F4, level_1_offset], 
-                [True, level_1_bar_length, A4, level_1_offset], 
-                [True, level_1_bar_length, C5, level_1_offset], 
-                [True, level_1_bar_length, E5, level_1_offset],
-                # Em7
-                [True, level_1_bar_length, E4, -level_1_bar_length * (3 + 2/3) + level_1_offset], 
-                [True, level_1_bar_length, G4, -level_1_bar_length * (3 + 2/3) + level_1_offset],
-                [True, level_1_bar_length, B4, -level_1_bar_length * (3 + 2/3) + level_1_offset],
-                [True, level_1_bar_length, D5, -level_1_bar_length * (3 + 2/3) + level_1_offset],
-                [True, level_1_bar_length, E5, -level_1_bar_length * (3 + 2/3) + level_1_offset],
-                # Dm9
-                [True, level_1_bar_length, D4, -level_1_bar_length * (8) + level_1_offset],
-                [True, level_1_bar_length, F4, -level_1_bar_length * (8) + level_1_offset],
-                [True, level_1_bar_length, A4, -level_1_bar_length * (8) + level_1_offset],
-                [True, level_1_bar_length, C5, -level_1_bar_length * (8) + level_1_offset],
-                [True, level_1_bar_length, E5, -level_1_bar_length * (8) + level_1_offset],
-                # G7/D
-                [True, level_1_bar_length, D4, -level_1_bar_length * (9 + 2/3) + level_1_offset],
-                [True, level_1_bar_length, F4, -level_1_bar_length * (9 + 2/3) + level_1_offset],
-                [True, level_1_bar_length, G4, -level_1_bar_length * (9 + 2/3) + level_1_offset],
-                [True, level_1_bar_length, B4, -level_1_bar_length * (9 + 2/3) + level_1_offset],
-                [True, level_1_bar_length, D5, -level_1_bar_length * (9 + 2/3) + level_1_offset],
-                # Cmaj7
-                [True, level_1_bar_length, C4, -level_1_bar_length * (11 + 2/3) + level_1_offset],
-                [True, level_1_bar_length, E4, -level_1_bar_length * (11 + 2/3) + level_1_offset],
-                [True, level_1_bar_length, G4, -level_1_bar_length * (11 + 2/3) + level_1_offset],
-                [True, level_1_bar_length, B4, -level_1_bar_length * (11 + 2/3) + level_1_offset],
-                [True, level_1_bar_length, E5, -level_1_bar_length * (11 + 2/3) + level_1_offset]
-                ]
-
 def level_1():
     pygame.mixer.music.load("Level 1.mp3")
     pygame.mixer.music.play()
@@ -102,14 +55,25 @@ def level_1():
     LEVEL[1] = 860
     pygame.event.post(level_start_event)
 
-levels_notelists = [level_1_notelist]
+def level_2():
+    pygame.mixer.music.load("Level 2.mp3")
+    pygame.mixer.music.play()
+    menu.disable()
+    LEVEL[0] = 2
+    LEVEL[1] = 4400
+    pygame.event.post(level_start_event)
+
+levels_notelists = [notes.level_1_notelist, notes.level_2_notelist] # type: ignore
 level_countdown = 0
 notes: list[Note] = []
 
 piano = pygame.image.load("piano.bmp")
 
-menu = pygame_menu.Menu("Chordfall", 400, 500, theme=pygame_menu.themes.THEME_DARK)
+menu = pygame_menu.Menu("Chordfall", 300, 375, theme=pygame_menu.themes.THEME_DARK)
 menu.add.button("Level 1", level_1)
+menu.add.button("Level 2", level_2)
+menu.add.button("Level 3", level_1)
+menu.add.button("Level 4", level_1)
 
 while True:
     # check events to handle quitting and level start
