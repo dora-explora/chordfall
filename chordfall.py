@@ -15,14 +15,20 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.image.load(frames[frame]).convert_alpha()
 
 class Note(pygame.sprite.Sprite):
-    def __init__(self, white_note: bool, height: int, x: float, y: float):
+    def __init__(self, note_type: int, height: int, x: float, y: float):
         super().__init__()
-        if white_note:
+        if note_type == 0:
             self.image = pygame.Surface([35, height])
             self.image.fill("white")
-        else:
+        elif note_type == 1:
             self.image = pygame.Surface([20, height])
             self.image.fill("black")
+        elif note_type == 2:
+            self.image = pygame.Surface([35, height])
+            self.image.fill("orange")
+        elif note_type == 3:
+            self.image = pygame.Surface([20, height])
+            self.image.fill("orange")
         self.rect = self.image.get_rect()
         self.rect = self.rect.move(x + 5, y - height)
 
