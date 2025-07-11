@@ -8,7 +8,6 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = pygame.image.load("playerA.bmp").convert_alpha()
-        self.rect = self.image.get_rect()
 
     def update(self, frame: int):
         frames = ["playerA.bmp", "playerB.bmp"]
@@ -47,7 +46,7 @@ LEVEL = [0, 0] # level number and frame countdown
 level_start_event = pygame.event.Event(pygame.USEREVENT)
 
 player = Player()
-position = 330
+position = 350
 move_speed = 4
 note_speed = 10
 player_frame = 0
@@ -81,6 +80,10 @@ menu.add.button("Level 2", level_2)
 menu.add.button("Level 3", level_1)
 menu.add.button("Level 4", level_1)
 
+game_over = False
+
+score = 0
+
 while True:
     # check events to handle quitting and level start
     events = pygame.event.get()
@@ -97,9 +100,11 @@ while True:
     # handle movement
     keys = pygame.key.get_pressed()
     if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-        position -= move_speed
+        if position > 0:
+            position -= move_speed
     elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-        position += move_speed
+        if position < 700:
+            position += move_speed
     # render character and manage bouncing
     player_bounce_countdown -= 1
     if player_bounce_countdown == 0:
@@ -111,9 +116,25 @@ while True:
     # all the in-level logic
     if LEVEL[0] != 0:
         LEVEL[1] -= 1 # decrement the level length countdown
-        for note in notes:
-            note.rect = note.rect.move(0, note_speed)
-            screen.blit(note.image, note.rect)
+        if not game_over:
+            for note in notes:
+                note.rect = note.rect.move(0, note_speed)
+                screen.blit(note.image, note.rect)
+                if pygame.Rect(position, 720, 20, 45).colliderect(note.rect):
+                    game_over = True
+                elif pygame.Rect(position + 20, 720, 20, 45).colliderect(note.rect) or pygame.Rect(position - 20, 720, 20, 45).colliderect(note.rect):
+                    score += 20
+                    print(f"near miss! score = {score}")
+                elif pygame.Rect(position + 40, 720, 20, 45).colliderect(note.rect) or pygame.Rect(position - 40, 720, 20, 45).colliderect(note.rect):
+                    score += 10
+                    print(f"close! score = {score}")
+                elif pygame.Rect(position + 60, 720, 20, 45).colliderect(note.rect) or pygame.Rect(position - 60, 720, 20, 45).colliderect(note.rect):
+                    score += 5
+                    print(f"about, score = {score}")
+        if game_over == True:
+            LEVEL[1] = 0
+            print("game over!")
+
         
         if LEVEL[1] == 100:
             pygame.mixer.music.load("golf clap.mp3")
@@ -121,6 +142,12 @@ while True:
         if LEVEL[1] == 0:
             LEVEL[0] = 0
             pygame.mixer.music.fadeout(1500)
+            if game_over:
+                game_over = False
+                # show loss menu
+                score = 0
+            # else: 
+                # show win menu
             menu.enable()
 
     screen.blit(piano, (0, 750))
