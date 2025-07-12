@@ -28,6 +28,12 @@ class Note(pygame.sprite.Sprite):
         elif note_type == 3:
             self.image = pygame.Surface([20, height])
             self.image.fill("orange")
+        elif note_type == 4:
+            self.image = pygame.Surface([35, height])
+            self.image.fill("dark blue")
+        elif note_type == 5:
+            self.image = pygame.Surface([20, height])
+            self.image.fill("dark blue")
         self.rect = self.image.get_rect()
         self.rect = self.rect.move(x + 5, y - height)
 
@@ -68,7 +74,15 @@ def level_2():
     LEVEL[1] = 4400
     pygame.event.post(level_start_event)
 
-levels_notelists = [notes.level_1_notelist, notes.level_2_notelist] # type: ignore
+def level_4():
+    pygame.mixer.music.load("Giant Steps.mp3")
+    pygame.mixer.music.play()
+    menu.disable()
+    LEVEL[0] = 4
+    LEVEL[1] = 4000
+    pygame.event.post(level_start_event)
+
+levels_notelists = [notes.level_1_notelist, notes.level_2_notelist, [], notes.level_4_notelist] # type: ignore
 level_countdown = 0
 notes: list[Note] = []
 
@@ -85,7 +99,7 @@ menu = pygame_menu.Menu("Chordfall", 300, 375, theme=pygame_menu.themes.THEME_DA
 menu.add.button("Level 1", level_1)
 menu.add.button("Level 2", level_2)
 menu.add.button("Level 3", level_1)
-menu.add.button("Level 4", level_1)
+menu.add.button("Level 4", level_4)
 
 game_over = False
 
