@@ -61,7 +61,8 @@ player_bounce_countdown = 40
 def level_1():
     pygame.mixer.music.load("Level 1.mp3")
     pygame.mixer.music.play()
-    menu.disable()
+    main_menu.disable()
+    main_menu.full_reset()
     LEVEL[0] = 1
     LEVEL[1] = 860
     pygame.event.post(level_start_event)
@@ -69,41 +70,115 @@ def level_1():
 def level_2():
     pygame.mixer.music.load("Level 2.mp3")
     pygame.mixer.music.play()
-    menu.disable()
+    main_menu.disable()
+    main_menu.full_reset()
     LEVEL[0] = 2
     LEVEL[1] = 4400
     pygame.event.post(level_start_event)
 
-def level_4():
+def level_3():
     pygame.mixer.music.load("Giant Steps.mp3")
     pygame.mixer.music.play()
-    menu.disable()
-    LEVEL[0] = 4
+    main_menu.disable()
+    main_menu.full_reset()
+    LEVEL[0] = 3
     LEVEL[1] = 4000
     pygame.event.post(level_start_event)
 
-levels_notelists = [notes.level_1_notelist, notes.level_2_notelist, [], notes.level_4_notelist] # type: ignore
+levels_notelists = [notes.level_1_notelist, notes.level_2_notelist, notes.level_3_notelist] # type: ignore
 level_countdown = 0
 notes: list[Note] = []
 
-background = pygame.image.load("background.bmp")
-piano = pygame.image.load("piano.bmp").convert_alpha()
 left_key = pygame.image.load("left_key.bmp").convert_alpha()
 middle_key = pygame.image.load("middle_key.bmp").convert_alpha()
 right_key = pygame.image.load("right_key.bmp").convert_alpha()
 black_key = pygame.Surface((30, 75))
 black_key.fill((99, 198, 77))
+
+def check_lit_key(rect: pygame.rect.Rect) -> tuple[pygame.surface.Surface, tuple[int, int]]: # type: ignore
+    if rect.collidepoint(30, 750):
+        return (left_key, (8, 758))
+    elif rect.collidepoint(60, 750):
+        return (black_key, (45, 758))
+    elif rect.collidepoint(90, 750):
+        return (middle_key, (68, 758))
+    elif rect.collidepoint(120, 750):
+        return (black_key, (105, 758))
+    elif rect.collidepoint(150, 750):
+        return (right_key, (128, 758))
+    elif rect.collidepoint(210, 750):
+        return (left_key, (188, 758))
+    elif rect.collidepoint(240, 750):
+        return (black_key, (225, 758))
+    elif rect.collidepoint(270, 750):
+        return (middle_key, (248, 758))
+    elif rect.collidepoint(300, 750):
+        return (black_key, (285, 758))
+    elif rect.collidepoint(330, 750):
+        return (middle_key, (308, 758))
+    elif rect.collidepoint(360, 750):
+        return (black_key, (345, 758))
+    elif rect.collidepoint(390, 750):
+        return (right_key, (368, 758))
+    elif rect.collidepoint(450, 750):
+        return (left_key, (428, 758))
+    elif rect.collidepoint(480, 750):
+        return (black_key, (465, 758))
+    elif rect.collidepoint(510, 750):
+        return (middle_key, (488, 758))
+    elif rect.collidepoint(540, 750):
+        return (black_key, (525, 758))
+    elif rect.collidepoint(570, 750):
+        return (right_key, (548, 758))
+    elif rect.collidepoint(630, 750):
+        return (left_key, (608, 758))
+    elif rect.collidepoint(660, 750):
+        return (black_key, (645, 758))
+    elif rect.collidepoint(690, 750):
+        return (right_key, (668, 758))
+
+background = pygame.image.load("background.bmp")
+piano = pygame.image.load("piano.bmp").convert_alpha()
 render_keys: list[tuple[pygame.Surface, tuple[int, int]]] = []
 
-menu = pygame_menu.Menu("Chordfall", 300, 375, theme=pygame_menu.themes.THEME_DARK)
-menu.add.button("Level 1", level_1)
-menu.add.button("Level 2", level_2)
-menu.add.button("Level 3", level_1)
-menu.add.button("Level 4", level_4)
+main_menu = pygame_menu.Menu("Chordfall", 300, 375, theme=pygame_menu.themes.THEME_DARK)
+main_menu.add.button("Level 1", level_1)
+main_menu.add.button("Level 2", level_2)
+main_menu.add.button("Level 3", level_3)
+
+def open_main_menu():
+    main_menu.enable()
+    win_menu.disable()
+    loss_menu.disable()
+
+win_menu = pygame_menu.Menu("Level Won!", 300, 375, theme=pygame_menu.themes.THEME_DARK)
+win_level_label = win_menu.add.label("")
+win_score_label = win_menu.add.label("")
+win_score_label.set_margin(0, 30) # type: ignore
+win_back_button = win_menu.add.button("Go Back", open_main_menu)
+win_menu.disable()
+
+def open_level():
+    loss_menu.disable()
+    match level:
+        case 1:
+            level_1()
+        case 2:
+            level_2()
+        case 3:
+            level_3()
+
+loss_menu = pygame_menu.Menu("Level Lost", 300, 375, theme=pygame_menu.themes.THEME_DARK)
+loss_level_label = loss_menu.add.label("")
+loss_score_label = loss_menu.add.label("")
+loss_score_label.set_margin(0, 30) # type: ignore
+loss_back_button = loss_menu.add.button("Go Back", open_main_menu) # type: ignore
+loss_retry_button = loss_menu.add.button("Try Again", open_level)
+loss_menu.disable()
 
 game_over = False
-
 score = 0
+level = 0
 
 while True:
     # check events to handle quitting and level start
@@ -114,6 +189,10 @@ while True:
             running = False
         if event.type == pygame.USEREVENT:
             score = 0
+            level = LEVEL[0]
+            main_menu.disable()
+            win_menu.disable()
+            loss_menu.disable()
             notes = construct_notes(levels_notelists[LEVEL[0] - 1])
     if running == False:
         break
@@ -146,73 +225,35 @@ while True:
                 if pygame.Rect(position, 720, 20, 45).colliderect(note.rect):
                     game_over = True
                 elif pygame.Rect(position + 20, 720, 20, 45).colliderect(note.rect) or pygame.Rect(position - 20, 720, 20, 45).colliderect(note.rect):
-                    score += 20
-                    # print(f"near miss! score = {score}")
+                    score += 20 + (20 * (LEVEL[0] == 3))
                 elif pygame.Rect(position + 40, 720, 20, 45).colliderect(note.rect) or pygame.Rect(position - 40, 720, 20, 45).colliderect(note.rect):
-                    score += 10
-                    # print(f"close! score = {score}")
+                    score += 10 + (10 * (LEVEL[0] == 3))
                 elif pygame.Rect(position + 60, 720, 20, 45).colliderect(note.rect) or pygame.Rect(position - 60, 720, 20, 45).colliderect(note.rect):
-                    score += 5
-                    # print(f"about, score = {score}")
+                    score += 5 + (5 * (LEVEL[0] == 3))
                 
-                if note.rect.collidepoint(30, 750):
-                    render_keys.append((left_key, (8, 758)))
-                elif note.rect.collidepoint(60, 750):
-                    render_keys.append((black_key, (45, 758)))
-                elif note.rect.collidepoint(90, 750):
-                    render_keys.append((middle_key, (68, 758)))
-                elif note.rect.collidepoint(120, 750):
-                    render_keys.append((black_key, (105, 758)))
-                elif note.rect.collidepoint(150, 750):
-                    render_keys.append((right_key, (128, 758)))
-                elif note.rect.collidepoint(210, 750):
-                    render_keys.append((left_key, (188, 758)))
-                elif note.rect.collidepoint(240, 750):
-                    render_keys.append((black_key, (225, 758)))
-                elif note.rect.collidepoint(270, 750):
-                    render_keys.append((middle_key, (248, 758)))
-                elif note.rect.collidepoint(300, 750):
-                    render_keys.append((black_key, (285, 758)))
-                elif note.rect.collidepoint(330, 750):
-                    render_keys.append((middle_key, (308, 758)))
-                elif note.rect.collidepoint(360, 750):
-                    render_keys.append((black_key, (345, 758)))
-                elif note.rect.collidepoint(390, 750):
-                    render_keys.append((right_key, (368, 758)))
-                elif note.rect.collidepoint(450, 750):
-                    render_keys.append((left_key, (428, 758)))
-                elif note.rect.collidepoint(480, 750):
-                    render_keys.append((black_key, (465, 758)))
-                elif note.rect.collidepoint(510, 750):
-                    render_keys.append((middle_key, (488, 758)))
-                elif note.rect.collidepoint(540, 750):
-                    render_keys.append((black_key, (525, 758)))
-                elif note.rect.collidepoint(570, 750):
-                    render_keys.append((right_key, (548, 758)))
-                elif note.rect.collidepoint(630, 750):
-                    render_keys.append((left_key, (608, 758)))
-                elif note.rect.collidepoint(660, 750):
-                    render_keys.append((black_key, (645, 758)))
-                elif note.rect.collidepoint(690, 750):
-                    render_keys.append((right_key, (668, 758)))
+                if note.rect.bottom > 750 and note.rect.top <= 750:
+                    render_keys.append(check_lit_key(note.rect))
+                
         if game_over:
             render_keys = []
             LEVEL[1] = 0
-            print("game over!")
 
         if LEVEL[1] == 100:
             pygame.mixer.music.load("golf clap.mp3")
             pygame.mixer.music.play()
         if LEVEL[1] == 0:
-            LEVEL[0] = 0
             pygame.mixer.music.fadeout(1500)
             if game_over:
                 game_over = False
-                # show loss menu
-                score = 0
-            # else: 
-                # show win menu
-            menu.enable()
+                loss_level_label.set_title(f"Level {LEVEL[0]} lost...") # type: ignore
+                loss_score_label.set_title(f"Score: {score}") # type: ignore
+                loss_menu.enable()
+            else: 
+                win_level_label.set_title(f"Level {LEVEL[0]} completed!") # type: ignore
+                win_score_label.set_title(f"Score: {score}") # type: ignore
+                win_menu.enable()
+            LEVEL[0] = 0
+                
 
     screen.blit(piano, (0, 750))
     for key in render_keys:
@@ -220,10 +261,17 @@ while True:
     score_text = pygame.font.Font(None, 32).render(f"Score: {score}", True, "black")
     screen.blit(score_text, (10, 10))
 
-    if menu.is_enabled():
-        menu.update(events)
-    if menu.is_enabled():
-        menu.draw(screen)
-
+    if main_menu.is_enabled():
+        main_menu.update(events)
+    if win_menu.is_enabled():
+        win_menu.update(events)
+    if loss_menu.is_enabled():
+        loss_menu.update(events)
+    if main_menu.is_enabled():
+        main_menu.draw(screen)
+    if win_menu.is_enabled():
+        win_menu.draw(screen)
+    if loss_menu.is_enabled():
+        loss_menu.draw(screen)
     pygame.display.flip()
     clock.tick(60)  # limits FPS to 60, apparently

@@ -407,7 +407,7 @@ level_2_notelist = [
     [3, 80, Gb4, level_2_bar_length * (102 + 2/3) - 650],
     [2, 160, F4, level_2_bar_length * (103) - 650],
     [2, 80, F4, level_2_bar_length * (106) - 650],
-    [3, 80, Gb4, level_2_bar_length * (106 + 5/6) - 650],
+    [3, 80, Ab4, level_2_bar_length * (106 + 5/6) - 650],
     [2, 80, F4, level_2_bar_length * (107 + 2/3) - 650],
     [2, 80, F4, level_2_bar_length * (110) - 650],
     [2, 80, A4, level_2_bar_length * (110 + 2/3) - 650],
@@ -428,7 +428,7 @@ level_2_notelist = [
 
 level_4_bar_length = -144
 
-level_4_notelist = [
+level_3_notelist = [
     # Piano Chords
     [1, 144, Gb5, level_4_bar_length * (60) - 650],
     [1, 144, Db5, level_4_bar_length * (60) - 650],
@@ -780,5 +780,4 @@ level_4_notelist = [
     #   48, too high
     #   48, too high
     [3, 48, Gb5, level_4_bar_length * (190 + 0/3) - 650],
-
 ]
