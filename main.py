@@ -1,3 +1,5 @@
+from os import environ, path
+environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 import pygame
 import pygame_menu
 import notes # type: ignore
@@ -7,10 +9,10 @@ import pygame_menu.themes
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("playerA.bmp").convert_alpha()
+        self.image = pygame.image.load(path.join("assets", "images", "playerA.bmp")).convert_alpha()
 
     def update(self, frame: int):
-        frames = ["playerA.bmp", "playerB.bmp"]
+        frames = [path.join("assets", "images", "playerA.bmp"), path.join("assets", "images", "playerB.bmp")]
         self.image = pygame.image.load(frames[frame]).convert_alpha()
 
 class Note(pygame.sprite.Sprite):
@@ -59,7 +61,7 @@ player_frame = 0
 player_bounce_countdown = 40
 
 def level_1():
-    pygame.mixer.music.load("Level 1.mp3")
+    pygame.mixer.music.load(path.join("assets", "sounds", "Level 1.mp3"))
     pygame.mixer.music.play()
     main_menu.disable()
     main_menu.full_reset()
@@ -68,7 +70,7 @@ def level_1():
     pygame.event.post(level_start_event)
 
 def level_2():
-    pygame.mixer.music.load("Level 2.mp3")
+    pygame.mixer.music.load(path.join("assets", "sounds", "Level 2.mp3"))
     pygame.mixer.music.play()
     main_menu.disable()
     main_menu.full_reset()
@@ -77,7 +79,7 @@ def level_2():
     pygame.event.post(level_start_event)
 
 def level_3():
-    pygame.mixer.music.load("Giant Steps.mp3")
+    pygame.mixer.music.load(path.join("assets", "sounds", "Level 3.mp3"))
     pygame.mixer.music.play()
     main_menu.disable()
     main_menu.full_reset()
@@ -89,9 +91,9 @@ levels_notelists = [notes.level_1_notelist, notes.level_2_notelist, notes.level_
 level_countdown = 0
 notes: list[Note] = []
 
-left_key = pygame.image.load("left_key.bmp").convert_alpha()
-middle_key = pygame.image.load("middle_key.bmp").convert_alpha()
-right_key = pygame.image.load("right_key.bmp").convert_alpha()
+left_key = pygame.image.load(path.join("assets", "images", "left_key.bmp")).convert_alpha()
+middle_key = pygame.image.load(path.join("assets", "images", "middle_key.bmp")).convert_alpha()
+right_key = pygame.image.load(path.join("assets", "images", "right_key.bmp")).convert_alpha()
 black_key = pygame.Surface((30, 75))
 black_key.fill((99, 198, 77))
 
@@ -137,8 +139,8 @@ def check_lit_key(rect: pygame.rect.Rect) -> tuple[pygame.surface.Surface, tuple
     elif rect.collidepoint(690, 750):
         return (right_key, (668, 758))
 
-background = pygame.image.load("background.bmp")
-piano = pygame.image.load("piano.bmp").convert_alpha()
+background = pygame.image.load(path.join("assets", "images", "background.bmp"))
+piano = pygame.image.load(path.join("assets", "images", "piano.bmp")).convert_alpha()
 render_keys: list[tuple[pygame.Surface, tuple[int, int]]] = []
 
 main_menu = pygame_menu.Menu("Chordfall", 300, 375, theme=pygame_menu.themes.THEME_DARK)
@@ -239,7 +241,7 @@ while True:
             LEVEL[1] = 0
 
         if LEVEL[1] == 100:
-            pygame.mixer.music.load("golf clap.mp3")
+            pygame.mixer.music.load(path.join("assets", "sounds", "golf clap.mp3"))
             pygame.mixer.music.play()
         if LEVEL[1] == 0:
             pygame.mixer.music.fadeout(1500)
